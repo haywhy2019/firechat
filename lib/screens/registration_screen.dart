@@ -26,6 +26,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   String email;
   String password;
   bool showSpinner = false;
+  String error;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,13 +95,31 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         });
                         Navigator.pushNamed(context, ChatScreen.id);
                       }
+                    } on FirebaseAuthException catch (e) {
+                      setState(() {
+                        showSpinner = false;
+                      });
+                      if (e.code == 'weak-password') {
+                        error = 'The password provided is too weak.';
+                        print('The password provided is too weak.');
+                      } else if (e.code == 'email-already-in-use') {
+                        print('The account already exists for that email.');
+                        error = 'The account already exists for that email.';
+                      }
                     } catch (e) {
                       print(e);
                     }
                   },
                   color: Colors.blueAccent,
                   title: 'Register',
-                )
+                ),
+                error != null
+                    ? Text(
+                        error,
+                        style: TextStyle(color: Colors.red, fontSize: 14.0),
+                        textAlign: TextAlign.center,
+                      )
+                    : Text("")
               ],
             ),
           ),

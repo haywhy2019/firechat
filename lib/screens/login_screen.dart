@@ -15,6 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String email;
   String password;
   bool showSpinner = false;
+  String error;
 
   void loginUser() async {
     setState(() {
@@ -32,10 +33,15 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushNamed(context, ChatScreen.id);
       }
     } on FirebaseAuthException catch (e) {
+       setState(() {
+          showSpinner = false;
+        });
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
+        error = "No user found for that email.";
       } else if (e.code == 'wrong-password') {
         print('Wrong password provided for that user.');
+        error = "Wrong password provided for that user.";
       }
     }
   }
@@ -99,7 +105,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   title: "Log in",
                   color: Colors.lightBlueAccent,
-                )
+                ),
+                error != null
+                    ? Text(
+                        error,
+                        style: TextStyle(color: Colors.red, fontSize: 14.0),
+                        textAlign: TextAlign.center,
+                      )
+                    : Text("")
               ],
             ),
           ),
